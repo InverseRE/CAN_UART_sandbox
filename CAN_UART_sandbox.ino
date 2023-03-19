@@ -34,7 +34,9 @@ void loop()
         digitalWrite(LED, LED_ON);
         p2_len = min(p2_len, (int)sizeof(buf2) - buf2_len);
         buf2_len += p2.readBytes(buf2 + buf2_len, p2_len);
-        return;
+
+        if (buf2_len < (int)sizeof(buf2))
+            return;
     }
 
     // UART TX
@@ -43,7 +45,9 @@ void loop()
         int len = p2.write(buf2, buf2_len);
         buf2_len -= len;
         memmove(buf2, buf2 + len, buf2_len);
-        return;
+
+        if (len > 0)
+            return;
     }
 
     // NO OP
