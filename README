@@ -7,6 +7,10 @@ CPU Speed:          72MHz (Normal)
 Upload method:      STLink
 Optimize:
 
+UART 115200:  32 kBps
+UART 250000:  64 kBps
+UART 400000: 116 kBps
+
 This is an example of UART loopback.
 
 The remote counterpart is Blackpill STM32F401CCU6 (UART-USB).
