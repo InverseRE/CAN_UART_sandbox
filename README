@@ -1,0 +1,12 @@
+https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+
+Category:           STM32F1 Boards (Arduino_STM32)
+Board:              Generic STM32F103C series
+Variant:            STM32F103C8 (20k RAM. 64k Flash)
+CPU Speed:          72MHz (Normal)
+Upload method:      STLink
+Optimize:
+
+This is an example of UART loopback.
+
+The remote counterpart is Blackpill STM32F401CCU6 (UART-USB).
