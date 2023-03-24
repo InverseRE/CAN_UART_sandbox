@@ -1,3 +1,33 @@
+/*
+Copyright (c) 2020, John Eckert
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+ * My name, John Eckert nor Exothink.com may be used to endorse or promote
+   products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
+// https://github.com/exothink/eXoCAN
+
 #include "eXoCAN.h"
 
 // vers 1.0.1  02/06/2021
@@ -55,7 +85,7 @@ void eXoCAN::begin(idtype addrType, int brp, bool singleWire, bool alt, bool pul
 
     _extIDs = addrType;
 
-    
+
     // set up CAN IO pins
     uint8_t swMode = singleWire ? alt_out_od : alt_out;
     uint8_t inputMode = pullup ? inp_pull : inp_float;
@@ -63,13 +93,13 @@ void eXoCAN::begin(idtype addrType, int brp, bool singleWire, bool alt, bool pul
     if (alt)
     {
         MMIO32(apb2enr) |= (1 << 3) | (1 << 0); // enable gpioB = b3 and afio = b0 clks
-        MMIO32(mapr) |= (2 << 13);              // alt func, CAN remap to B9+B8 
+        MMIO32(mapr) |= (2 << 13);              // alt func, CAN remap to B9+B8
         MMIO32(crhB) &= 0xFFFFFF00;             // clear control bits for pins 8 & 9 of Port B
         MMIO32(crhB) |= inputMode;              // pin8 for rx, b0100 = b01xx, floating, bxx00 input
         periphBit(odrB, 8) = pullup;            // set input will pullup resistor for single wire with pullup mode
         MMIO32(crhB) |= swMode << 4;            // set output
     }
-    else 
+    else
     {
         MMIO32(apb2enr) |= (1 << 2) | (1 << 0); // enable gpioA = b2 and afio = b0 clks
         MMIO32(mapr) &= 0xffff9fff;             // CAN map to default pins, PA11/12
@@ -139,14 +169,14 @@ void eXoCAN::filterMask32Init(int bank, uint32_t id, uint32_t mask) //32b filter
 
 void eXoCAN::filter32Init(int bank, int mode, uint32_t a, uint32_t b) //32b filters
 {
-    periphBit(FINIT) = 1;                   // FINIT  'init' filter mode 
+    periphBit(FINIT) = 1;                   // FINIT  'init' filter mode
     periphBit(fa1r, bank) = 0;              // de-activate filter 'bank'
     periphBit(fs1r, bank) = 1;              // fsc filter scale reg,  0 => 2ea. 16b,  1=>32b
     periphBit(fm1r, bank) = mode;           // fbm list mode = 1, 0 = mask
-    MMIO32(fr1 + (8 * bank)) = (a << 3) | 4; // the RXID/MASK to match 
+    MMIO32(fr1 + (8 * bank)) = (a << 3) | 4; // the RXID/MASK to match
     MMIO32(fr2 + (8 * bank)) = (b << 3) | 4; // must replace a mask of zeros so that everything isn't passed
-    periphBit(fa1r, bank) = 1;              // activate this filter 
-    periphBit(FINIT) = 0;                   // ~FINIT  'active' filter mode 
+    periphBit(fa1r, bank) = 1;              // activate this filter
+    periphBit(FINIT) = 0;                   // ~FINIT  'active' filter mode
 }
 
 //bool eXoCAN::transmit(int txId, const void *ptr, unsigned int len)
